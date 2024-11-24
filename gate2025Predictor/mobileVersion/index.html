@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rank Predictor</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+   body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: black;
+        color: white;
+    }
+    
+    .container {
+        background-color: #292929;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        color: beige;
+        max-width: 300px;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    input[type="number"] {
+        background-color: #333; /* Set input background to dark grey */
+        color: white; /* Set input text color to white */
+    }
+    .custom-alert {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f0ad4e;
+        color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        text-align: center;
+        max-width: 90%; /* Adjust max-width for smaller screens */
+
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+            max-width: 80%;
+            padding: 15px;
+            
+        }
+        }
+
+        .custom-alert img {
+        max-width: 100%;
+        height: auto;
+        }
+        
+    .disclaimer {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        color: #888;
+        font-size: 12px;
+    }
+    input[type="number"]::-webkit-input-placeholder {
+     color: #a7a4a4; /* Light gray color */
+    }
+
+    input[type="number"]:-ms-input-placeholder {
+    color: #a7a4a4;
+    }
+
+    input[type="number"]::-ms-input-placeholder {
+    color: #a7a4a4;
+    }
+    @media (min-width: 768px) {
+        .container {
+        background-color: #292929;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        color: beige;
+        max-width: 550px;
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    h1 {
+        font-size: 33px; /* Increase font size */
+    }
+
+    label, input, button {
+        font-size: 18px; /* Increase font size */
+    }
+    button {
+        margin-top: 20px;
+        
+    }
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <h1>Rank Predictor GATE CS 2025</h1>
+            <form>
+              <div class="mb-3">
+                <label for="mark" class="form-label">Enter your (expected) marks:</label>
+                <input type="number" class="form-control" id="mark" required placeholder="Yaha daalne hai marks">
+              </div>
+              <button type="button" class="btn btn-primary" onclick="calculateRank()">Calculate Rank</button>
+            </form>
+            <p id="result"></p>
+          </div>
+        </div>
+      </div>
+    
+      <div class="disclaimer">
+        <p class="text-center">Disclaimer: This is an estimated rank based on historical data. Actual results may vary. Linear Interpolation on (2023, 2024) data. <br> Made by <a href="https://www.linkedin.com/in/rajataswani/">Rajat Aswani</a>.</p>
+      </div>
+
+  <script>
+    function customAlert(message, imageUrl) {
+        const alertContainer = document.createElement('div');
+        alertContainer.classList.add('custom-alert');
+
+        const alertContent = `
+            <img src="${imageUrl}" alt="Alert Image style="max-width: 100%;">
+            <p>${message}</p>
+        `;
+
+        alertContainer.innerHTML = alertContent;
+        document.body.appendChild(alertContainer);
+
+        setTimeout(() => {
+            alertContainer.remove();
+        }, 5000);
+    }
+
+function interpolateRank(mark) {
+  const marks = [-10, 0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 85, 90, 100];
+  const ranks = [98310, 94523, 79275, 64026, 31272, 12538, 5727, 2330, 806, 215, 37, 20, 2, 1];
+
+  if (mark > 100) {
+    customAlert("Brilliant?", "../ore-maiya-yo-kya-dekh-liyo.gif");
+    return;
+  }
+  if (mark < 0) {
+    customAlert("Bhai Calm Down, itna stress mat le!", "../mangesh-shinde-the-willpowerstar.gif");
+    return;
+  }
+  if (mark == "") {
+    customAlert("Forgot to enter marks?? Bro itna casual mat ho GATE ke liye", "../puppet-awkward.gif");
+    return;
+  }
+
+  let i = 0;
+  while (i < marks.length && marks[i] <= mark) {
+    i++;
+  }
+  i--;
+
+  const x1 = marks[i];
+  const y1 = ranks[i];
+  const x2 = marks[i + 1];
+  const y2 = ranks[i + 1];
+
+  const interpolatedRank = y1 + (mark - x1) * (y2 - y1) / (x2 - x1);
+  return Math.round(interpolatedRank);
+}
+
+function calculateRank() {
+  const mark = document.getElementById("mark").value;
+  const rank = interpolateRank(mark);
+  document.getElementById("result").textContent = `Your estimated rank is: ${rank}`;
+}
+document.getElementById("mark").addEventListener("focus", function() {
+    document.body.style.zoom = "1.0";
+});
+</script>
+</body>
+</html>
